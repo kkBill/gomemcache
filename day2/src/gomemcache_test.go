@@ -31,7 +31,7 @@ func TestGet(t *testing.T) {
 	// 创建缓存实例，并指定回调函数
 	cache := NewGroup("scores", 1024, GetterFunc(
 		func(key string) ([]byte, error) {
-			log.Printf("search key[%s] in db.\n", key)
+			log.Printf("search key[%s] from db.\n", key)
 			if v, ok := db[key]; ok {
 				if _, ok := loadCounts[key]; !ok {
 					loadCounts[key] = 0
@@ -44,11 +44,11 @@ func TestGet(t *testing.T) {
 
 	// 模拟查询
 	for k, v := range db {
-		//
+		// 第1次查询k，缓存未命中，因此需要从数据库中获取数据
 		if res, err := cache.Get(k); err != nil || res.String() != v {
-			t.Errorf("fail to get value of %s.\n", k)
+			t.Errorf("fail to get value of [%s] in db.\n", k)
 		}
-		//
+		// 第2次查询k，正常情况下应该从缓存中获取到对应的值
 		if _, err := cache.Get(k); err != nil || loadCounts[k] > 1 {
 			t.Errorf("key[%s] missed in cache.\n", k)
 		}
@@ -57,9 +57,4 @@ func TestGet(t *testing.T) {
 	if res, err := cache.Get("unknown"); err == nil {
 		t.Errorf("the value of key[unknown] should be empty, but [%s] got.\n", res)
 	}
-}
-
-
-func hash(key int, nodes int) int {
-	return key % nodes
 }

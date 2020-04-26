@@ -76,6 +76,7 @@ func (g *Group) getLocally(key string) (ByteView, error) {
 	if err != nil {
 		return ByteView{}, err
 	}
+	// 一定要注意这一步，在缓存中，存储的是从数据库中读出来数据的副本
 	value := ByteView{b: cloneBytes(bytes)}
 	g.populateCache(key, value)
 	return value, nil

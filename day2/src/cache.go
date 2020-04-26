@@ -1,7 +1,7 @@
 package gomemcache
 
 import (
-	"lru"
+	"gomemcache/lru"
 	"sync"
 )
 
@@ -25,7 +25,7 @@ func (c *cache) get(key string) (value ByteView, ok bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.lru == nil {
-		return
+		return ByteView{}, false
 	}
 
 	if v, ok := c.lru.Get(key); ok {
